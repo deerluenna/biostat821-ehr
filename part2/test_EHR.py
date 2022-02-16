@@ -1,5 +1,4 @@
 """Test navigation."""
-import sys
 import pytest
 
 from EHR_analysis import parse_data, num_older_than, sick_patients, age_first_adm
