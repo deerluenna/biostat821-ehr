@@ -1,7 +1,7 @@
 # --- Read and parse the data files --- #
 from datetime import *
 from typing import Tuple
-from EHR_part3 import Patient, Lab
+from EHR_objects import Patient, Lab
 
 
 """I chose a list of lists for my data structure for the following reason:
@@ -137,12 +137,11 @@ def create_patient_class(list_of_list: list[list[str]]):
             race=list_of_list[i][race_col_idx],
         )
         patient_list.append(patient)
-    # print(patient_list[0])
     return patient_list
 
 
 def create_lab_class(list_of_list: list[list[str]]):
-    patient_list = []
+    lab_list = []
     ID_col_idx = 999
     lab_col_idx = 999
     value_col_idx = 999
@@ -169,7 +168,6 @@ def create_lab_class(list_of_list: list[list[str]]):
             lab_date=list_of_list[i][lab_date_col_idx],
         )
         lab_list.append(lab)
-    # print(lab_list[0])
     return lab_list
 
 
@@ -185,25 +183,27 @@ if __name__ == "__main__":
     print("Enter the age to calculate:")
     age = input()
 
-    # num = num_older_than(age, parsed_patient_data)
-    # print(num)
+    num = num_older_than(age, parsed_patient_data)
+    print(num)
 
-    # print('To get the IDs of sick patient, enter the "lab test name" first:')
-    # lab = input()
-    # print('Enter either ">" or "<" for above or below:')
-    # gt_lt = input()
-    # print("Enter critical lab value:")
-    # value = input()
+    print('To get the IDs of sick patient, enter the "lab test name" first:')
+    lab = input()
+    print('Enter either ">" or "<" for above or below:')
+    gt_lt = input()
+    print("Enter critical lab value:")
+    value = input()
 
-    # result_sick_patient = sick_patients(lab, gt_lt, value, parsed_lab_data)
-    # print(result_sick_patient)
+    result_sick_patient = sick_patients(lab, gt_lt, value, parsed_lab_data)
+    print(result_sick_patient)
 
-    # print("Enter the patient ID for age at first admission")
-    # patient_id = input()
-    # result_age_first_adm = age_first_adm(
-    #     parsed_patient_data, parsed_lab_data, patient_id
-    # )
-    # print(result_age_first_adm)
+    print("Enter the patient ID for age at first admission")
+    patient_id = input()
+    result_age_first_adm = age_first_adm(
+        parsed_patient_data, parsed_lab_data, patient_id
+    )
+    print(f"The age of patient at first admission is:", result_age_first_adm)
 
     a = create_patient_class(parsed_patient_data)
     print(a[0].patient_id, a[0].gender, a[0].DOB, a[0].age)
+    b = create_lab_class(parsed_lab_data)
+    print(b[0].patient_id, b[0].lab, b[0].value, b[0].units, b[0].lab_date)
