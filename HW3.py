@@ -16,9 +16,8 @@ to access the same type of data.
 
 
 def parse_data(filename: str) -> list[list[str]]:
-    file = open(filename, 'r')
-    text = file.readlines()
-    # print(text)
+    with open(filename, 'r', encoding="utf-8-sig") as file:
+        text = file.readlines()
 
     list_of_list = []
 
