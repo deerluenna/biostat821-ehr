@@ -137,7 +137,7 @@ def create_patient_class(list_of_list: list[list[str]]):
             race=list_of_list[i][race_col_idx],
         )
         patient_list.append(patient)
-    print(patient_list[0])
+    # print(patient_list[0])
     return patient_list
 
 
@@ -161,15 +161,16 @@ def create_lab_class(list_of_list: list[list[str]]):
             lab_date_col_idx = j
 
     for i in range(1, len(list_of_list)):
-        patient = Patient(
+        lab = Lab(
             patient_id=list_of_list[i][ID_col_idx],
-            gender=list_of_list[i][gender_col_idx],
-            DOB=list_of_list[i][DOB_col_idx],
-            race=list_of_list[i][race_col_idx],
+            lab=list_of_list[i][lab_col_idx],
+            value=list_of_list[i][value_col_idx],
+            units=list_of_list[i][units_col_idx],
+            lab_date=list_of_list[i][lab_date_col_idx],
         )
-        patient_list.append(patient)
-    print(patient_list[0])
-    return patient_list
+        lab_list.append(lab)
+    # print(lab_list[0])
+    return lab_list
 
 
 if __name__ == "__main__":
