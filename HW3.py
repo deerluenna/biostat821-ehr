@@ -16,15 +16,14 @@ to access the same type of data.
 
 
 def parse_data(filename: str) -> list[list[str]]:
-    file = open(filename, "r")
-    text = file.readlines()
+    with open(filename, "r", encoding="utf-8-sig") as file:
+        text = file.readlines()
 
     list_of_list = []
 
     for line in text:  # N times
         line = line.strip().split("\t")  # 0(1)
         list_of_list.append(line)  # 0(1)
-    file.close()
 
     return list_of_list
 
