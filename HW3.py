@@ -24,7 +24,6 @@ def parse_data(filename: str) -> list[list[str]]:
     for line in text:  # N times
         line = line.strip().split("\t")  # 0(1)
         list_of_list.append(line)  # 0(1)
-    file.close()
 
     return list_of_list
 
@@ -35,10 +34,8 @@ def parse_data(filename: str) -> list[list[str]]:
 def num_older_than(age: str, list_of_list_patient: list[list[str]]) -> int:
 
     age_col_idx = 0
-    # print(list_of_list_patient[0])
     for j in range(len(list_of_list_patient[0])):
         if list_of_list_patient[0][j] == "PatientDateOfBirth":
-            # print(j)
             age_col_idx = j
 
     num = 0
@@ -63,7 +60,6 @@ def sick_patients(
     lab_col_idx = 0
     for j in range(len(list_of_list_lab[0])):
         if list_of_list_lab[0][j] == "LabName":
-            # print(j)
             lab_col_idx = j
         if list_of_list_lab[0][j] == "LabValue":
             value_col_idx = j
