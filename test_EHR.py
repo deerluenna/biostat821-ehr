@@ -1,7 +1,7 @@
 """Test navigation."""
 import pytest
 
-from HW3 import (
+from EHR_analysis import (
     parse_data,
     num_older_than,
     sick_patients,
