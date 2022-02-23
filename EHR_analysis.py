@@ -1,7 +1,7 @@
 # --- Read and parse the data files --- #
 from datetime import date, datetime
 from typing import Tuple
-from HW3 import Patient, Lab
+from EHR_objects import Patient, Lab
 
 
 """I chose a list of lists for my data structure for the following reason:
