@@ -31,19 +31,19 @@ def parse_data(filename: str) -> list[list[str]]:
 
 
 def num_older_than(age: str, list_of_list_patient: list[list[str]]) -> int:
-
+    """Computational complexity is N*(1+1) → 2N → N."""
     age_col_idx = 0
-    for j in range(len(list_of_list_patient[0])):
-        if list_of_list_patient[0][j] == "PatientDateOfBirth":
+    for j in range(len(list_of_list_patient[0])):  # N times
+        if list_of_list_patient[0][j] == "PatientDateOfBirth":  # 0(1)
             age_col_idx = j
 
     num = 0
-    for i in range(1, len(list_of_list_patient)):
+    for i in range(1, len(list_of_list_patient)):  # N times
         p_birth = datetime.strptime(
             list_of_list_patient[i][age_col_idx], "%Y-%m-%d %H:%M:%S.%f"
         ).year
 
-        if datetime.now().year - p_birth > float(age):
+        if datetime.now().year - p_birth > float(age):  # 0(1)
             num += 1
 
     return num
@@ -56,29 +56,32 @@ def num_older_than(age: str, list_of_list_patient: list[list[str]]) -> int:
 def sick_patients(
     lab: str, gt_lt: str, value: str, list_of_list_lab: list[list[str]]
 ) -> str:
+
+    """Cmputational complexity is N + N → N."""
+
     lab_col_idx = 0
     value_col_idx = 0
-    for j in range(len(list_of_list_lab[0])):
-        if list_of_list_lab[0][j] == "LabName":
+    for j in range(len(list_of_list_lab[0])):  # N times
+        if list_of_list_lab[0][j] == "LabName":  # 0(1)
             lab_col_idx = j
-        if list_of_list_lab[0][j] == "LabValue":
+        if list_of_list_lab[0][j] == "LabValue":  # 0(1)
             value_col_idx = j
 
     id_larger = []
     id_smaller = []
-    for i in range(1, len(list_of_list_lab)):
-        if list_of_list_lab[i][lab_col_idx] == lab:
-            if gt_lt == ">" and list_of_list_lab[i][value_col_idx] > value:
+    for i in range(1, len(list_of_list_lab)):  # N times
+        if list_of_list_lab[i][lab_col_idx] == lab:  # 0(1)
+            if gt_lt == ">" and list_of_list_lab[i][value_col_idx] > value:  # 0(1)
                 id_larger.append(list_of_list_lab[i][0])
-            elif gt_lt == "<" and list_of_list_lab[i][value_col_idx] < value:
+            elif gt_lt == "<" and list_of_list_lab[i][value_col_idx] < value:  # 0(1)
                 id_smaller.append(list_of_list_lab[i][0])
 
-    if id_larger != []:
+    if id_larger != []:  # 0(1)
         return id_larger
     elif gt_lt == ">":
         return "No one is larger"
 
-    if id_smaller != []:
+    if id_smaller != []:  # 0(1)
         return id_smaller
     elif gt_lt == "<":
         return "No one is smaller"
@@ -89,18 +92,23 @@ def age_first_adm(
     list_of_list_lab: list[list[str]],
     patient_id: str,
 ) -> int:
+
+    """Cmputational complexity is N*N + N → N^2."""
+
     labdate_col_idx = 0
-    for j in range(len(list_of_list_lab[0])):
-        if list_of_list_lab[0][j] == "LabDateTime":
+    for j in range(len(list_of_list_lab[0])):  # N times
+        if list_of_list_lab[0][j] == "LabDateTime":  # 0(1)
             labdate_col_idx = j
             break
 
-    for i in range(len(list_of_list_lab)):
-        if list_of_list_lab[i][0] == patient_id and int(list_of_list_lab[i][1]) == 1:
+    for i in range(len(list_of_list_lab)):  # N times
+        if (
+            list_of_list_lab[i][0] == patient_id and int(list_of_list_lab[i][1]) == 1
+        ):  # 0(1)
             age_first_lab = 0
             # visited_id.append(list_of_list_lab[i][0])
-            for k in range(1, len(list_of_list_patient)):
-                if list_of_list_patient[k][0] == list_of_list_lab[i][0]:
+            for k in range(1, len(list_of_list_patient)):  # N times
+                if list_of_list_patient[k][0] == list_of_list_lab[i][0]:  # 0(1)
                     p_birth = datetime.strptime(
                         list_of_list_patient[k][2], "%Y-%m-%d %H:%M:%S.%f"
                     ).year
@@ -114,12 +122,15 @@ def age_first_adm(
 
 
 def create_patient_class(list_of_list: list[list[str]]):
+
+    """Cmputational complexity is N + N → N."""
+
     patient_list = []
     ID_col_idx = 999
     gender_col_idx = 999
     DOB_col_idx = 999
     race_col_idx = 999
-    for j in range(len(list_of_list[0])):
+    for j in range(len(list_of_list[0])):  # N times
         if list_of_list[0][j] == "PatientID":
             ID_col_idx = j
         elif list_of_list[0][j] == "PatientGender":
@@ -129,7 +140,7 @@ def create_patient_class(list_of_list: list[list[str]]):
         elif list_of_list[0][j] == "PatientRace":
             race_col_idx = j
 
-    for i in range(1, len(list_of_list)):
+    for i in range(1, len(list_of_list)):  # N times
         patient = Patient(
             patient_id=list_of_list[i][ID_col_idx],
             gender=list_of_list[i][gender_col_idx],
@@ -141,13 +152,17 @@ def create_patient_class(list_of_list: list[list[str]]):
 
 
 def create_lab_class(list_of_list: list[list[str]]):
+
+    """Cmputational complexity is N + N → N."""
+
     lab_list = []
     ID_col_idx = 999
     lab_col_idx = 999
     value_col_idx = 999
     units_col_idx = 999
     lab_date_col_idx = 999
-    for j in range(len(list_of_list[0])):
+
+    for j in range(len(list_of_list[0])):  # N times
         if list_of_list[0][j] == "PatientID":
             ID_col_idx = j
         elif list_of_list[0][j] == "LabName":
@@ -159,7 +174,7 @@ def create_lab_class(list_of_list: list[list[str]]):
         elif list_of_list[0][j] == "LabDateTime":
             lab_date_col_idx = j
 
-    for i in range(1, len(list_of_list)):
+    for i in range(1, len(list_of_list)):  # N times
         lab = Lab(
             patient_id=list_of_list[i][ID_col_idx],
             lab=list_of_list[i][lab_col_idx],
