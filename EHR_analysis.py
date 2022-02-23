@@ -1,14 +1,14 @@
 # --- Read and parse the data files --- #
-from datetime import *
+from datetime import date, datetime
 from typing import Tuple
-from EHR_objects import Patient, Lab
+from HW3 import Patient, Lab
 
 
 """I chose a list of lists for my data structure for the following reason:
-A list can hold a mix of different kinds of data types, including multiple 
-charatcteristics and test information of the same patient, even though 
-they are not in the same format. Hence, a list of lists can save patient data 
-in the same format for different information, and we can use the same index 
+A list can hold a mix of different kinds of data types, including multiple
+charatcteristics and test information of the same patient, even though
+they are not in the same format. Hence, a list of lists can save patient data
+in the same format for different information, and we can use the same index
 to access the same type of data.
 """
 
@@ -18,7 +18,6 @@ to access the same type of data.
 def parse_data(filename: str) -> list[list[str]]:
     file = open(filename, "r", encoding="utf-8-sig")
     text = file.readlines()
-
     list_of_list = []
 
     for line in text:  # N times
@@ -50,7 +49,8 @@ def num_older_than(age: str, list_of_list_patient: list[list[str]]) -> int:
     return num
 
 
-# --- Return a (unique) list of patients who have a given test with value above (">") or below ("<") a given level --- #
+# --- Return a (unique) list of patients who have a given test with value
+# above (">") or below ("<") a given level --- #
 
 
 def sick_patients(
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     )
     print(f"The age of patient at first admission is:", result_age_first_adm)
 
-    a = create_patient_class(parsed_patient_data)
-    print(a[0].patient_id, a[0].gender, a[0].DOB, a[0].age)
-    b = create_lab_class(parsed_lab_data)
-    print(b[0].patient_id, b[0].lab, b[0].value, b[0].units, b[0].lab_date)
+    # a = create_patient_class(parsed_patient_data)
+    # print(a[0].patient_id, a[0].gender, a[0].DOB, a[0].age)
+    # b = create_lab_class(parsed_lab_data)
+    # print(b[0].patient_id, b[0].lab, b[0].value, b[0].units, b[0].lab_date)
