@@ -14,15 +14,14 @@ to access the same type of data.
 
 
 def parse_data(filename: str) -> list[list[str]]:
-    file = open(filename, "r", encoding="utf-8-sig")
-    text = file.readlines()
+    with open(filename, "r", encoding="utf-8-sig") as file:
+        text = file.readlines()
 
     list_of_list = []
 
     for line in text:  # N times
         line = line.strip().split("\t")  # 0(1)
         list_of_list.append(line)  # 0(1)
-    file.close()
     return list_of_list
 
 
@@ -57,6 +56,7 @@ def sick_patients(
 ) -> str:
     lab_col_idx = 0
     value_col_idx = 0
+
     for j in range(len(list_of_list_lab[0])):
         if list_of_list_lab[0][j] == "LabName":
             lab_col_idx = j
@@ -143,3 +143,4 @@ if __name__ == "__main__":
         parsed_patient_data, parsed_lab_data, patient_id
     )
     print(result_age_first_adm)
+
