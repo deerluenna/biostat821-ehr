@@ -11,6 +11,8 @@ This project has four modules:
     Inputs include lab test name (e.g. "CBC: MCH"), boolean operation (e.g. ">" or "<"), critical value (e.g. "35.8"), and the previously entered lab file.
 - `age_first_adm` contains the age of entered patient at his/her first lab data.
     Inputs include patient id (e.g. "1A8791E3-A61C-455A-8DEE-763EB90C9B2C"), previously entered patient and lab files.
+- `create_patient_class` contains a function to create patient objects with attributes including patient ID, gender, date of birth, and race.
+- `create_lab_class` contains a function to create lab objects with attributes including patient ID, lab name, value, units, and lab date.
 
 ## For Contributors Running Tests
 Test modules are placed in the `test_EHR.py`. Importation of `pytest` is required for testing. Note that tests is not a Python package and has no "__init__.py" file.
