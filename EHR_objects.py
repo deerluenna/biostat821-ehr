@@ -1,5 +1,5 @@
 # EHR part3
-from datetime import *
+from datetime import date, datetime
 
 
 class Patient:
