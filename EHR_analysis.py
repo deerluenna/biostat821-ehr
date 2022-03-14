@@ -30,7 +30,7 @@ def parse_data(filename: str) -> list[list[str]]:
 # --- Return the number of patients older than a given age (years) --- #
 
 
-def num_older_than(age: str, list_of_list_patient: list[list[str]]) -> int:
+def num_older_than(age: float, list_of_list_patient: list[list[str]]) -> int:
     """Computational complexity is N*(1+1) → 2N → N."""
     age_col_idx = 0
     for j in range(len(list_of_list_patient[0])):  # N times
@@ -43,7 +43,7 @@ def num_older_than(age: str, list_of_list_patient: list[list[str]]) -> int:
             list_of_list_patient[i][age_col_idx], "%Y-%m-%d %H:%M:%S.%f"
         ).year
 
-        if datetime.now().year - p_birth > float(age):  # 0(1)
+        if datetime.now().year - p_birth > age:  # 0(1)
             num += 1
 
     return num
@@ -54,10 +54,14 @@ def num_older_than(age: str, list_of_list_patient: list[list[str]]) -> int:
 
 
 def sick_patients(
-    lab: str, gt_lt: str, value: str, list_of_list_lab: list[list[str]]
-) -> str:
+    lab: str, gt_lt: str, value: float, list_of_list_lab: list[list[str]]
+) -> set[str]:
+    """Find unique patient IDs with a lab value greater or less than
+    a given value of a certain lab type.
 
-    """Cmputational complexity is N + N → N."""
+    Cmputational complexity is N + N → N.
+
+    """
 
     lab_col_idx = 0
     value_col_idx = 0
@@ -67,24 +71,30 @@ def sick_patients(
         if list_of_list_lab[0][j] == "LabValue":  # 0(1)
             value_col_idx = j
 
-    id_larger = []
-    id_smaller = []
+    id_larger = set()
+    id_smaller = set()
     for i in range(1, len(list_of_list_lab)):  # N times
         if list_of_list_lab[i][lab_col_idx] == lab:  # 0(1)
-            if gt_lt == ">" and list_of_list_lab[i][value_col_idx] > value:  # 0(1)
-                id_larger.append(list_of_list_lab[i][0])
-            elif gt_lt == "<" and list_of_list_lab[i][value_col_idx] < value:  # 0(1)
-                id_smaller.append(list_of_list_lab[i][0])
+            if (
+                gt_lt == ">" and float(list_of_list_lab[i][value_col_idx]) > value
+            ):  # 0(1)
+                id_larger.add(list_of_list_lab[i][0])
+            elif (
+                gt_lt == "<" and float(list_of_list_lab[i][value_col_idx]) < value
+            ):  # 0(1)
+                id_smaller.add(list_of_list_lab[i][0])
 
-    if id_larger != []:  # 0(1)
+    if id_larger:  # 0(1)
         return id_larger
     elif gt_lt == ">":
-        return "No one is larger"
+        raise ValueError("No one is larger")
 
-    if id_smaller != []:  # 0(1)
+    if id_smaller:  # 0(1)
         return id_smaller
     elif gt_lt == "<":
-        return "No one is smaller"
+        raise ValueError("No one is smaller")
+
+    raise ValueError("Operator input should be either '>' or '<'")
 
 
 def age_first_adm(
@@ -118,7 +128,7 @@ def age_first_adm(
                     age_first_lab = lab_yr - p_birth
                     return age_first_lab
 
-    return "No lab record or no such patient id."
+    raise ValueError("No lab record or no such patient id.")
 
 
 def create_patient_class(list_of_list: list[list[str]]):
@@ -196,7 +206,7 @@ if __name__ == "__main__":
     parsed_lab_data = parse_data(filename_lab)
 
     print("Enter the age to calculate:")
-    age = input()
+    age = float(input())
 
     num = num_older_than(age, parsed_patient_data)
     print(num)
@@ -206,7 +216,7 @@ if __name__ == "__main__":
     print('Enter either ">" or "<" for above or below:')
     gt_lt = input()
     print("Enter critical lab value:")
-    value = input()
+    value = float(input())
 
     result_sick_patient = sick_patients(lab, gt_lt, value, parsed_lab_data)
     print(result_sick_patient)
