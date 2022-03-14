@@ -1,5 +1,6 @@
 # --- Read and parse the data files --- #
 from datetime import *
+from multiprocessing.sharedctypes import Value
 from typing import Tuple
 
 """I chose a list of lists for my data structure for the following reason:
@@ -53,7 +54,7 @@ def num_older_than(age: str, list_of_list_patient: list[list[str]]) -> int:
 
 def sick_patients(
     lab: str, gt_lt: str, value: str, list_of_list_lab: list[list[str]]
-) -> str:
+) -> set[str]:
     lab_col_idx = 0
     value_col_idx = 0
 
@@ -63,24 +64,24 @@ def sick_patients(
         if list_of_list_lab[0][j] == "LabValue":
             value_col_idx = j
 
-    id_larger = []
-    id_smaller = []
+    id_larger = set()
+    id_smaller = set()
     for i in range(1, len(list_of_list_lab)):
         if list_of_list_lab[i][lab_col_idx] == lab:
             if gt_lt == ">" and list_of_list_lab[i][value_col_idx] > value:
-                id_larger.append(list_of_list_lab[i][0])
+                id_larger.add(list_of_list_lab[i][0])
             elif gt_lt == "<" and list_of_list_lab[i][value_col_idx] < value:
-                id_smaller.append(list_of_list_lab[i][0])
+                id_smaller.add(list_of_list_lab[i][0])
 
-    if id_larger != []:
+    if id_larger:
         return id_larger
     elif gt_lt == ">":
-        return "No one is larger"
+        raise ValueError("No one is larger")
 
-    if id_smaller != []:
+    if id_smaller:
         return id_smaller
     elif gt_lt == "<":
-        return "No one is smaller"
+        raise ValueError("No one is smaller")
 
 
 def age_first_adm(
@@ -109,7 +110,7 @@ def age_first_adm(
                     age_first_lab = lab_yr - p_birth
                     return age_first_lab
 
-    return "No lab record or no such patient id."
+    raise ValueError("No lab record or no such patient id.")
 
 
 if __name__ == "__main__":
@@ -143,4 +144,3 @@ if __name__ == "__main__":
         parsed_patient_data, parsed_lab_data, patient_id
     )
     print(result_age_first_adm)
-
