@@ -13,13 +13,8 @@ from EHR_analysis import (
 
 def test_parse_data():
     """Test data parsing."""
-    Test_Lab_1 = "Test_Lab_1.txt"
-    Test_Patient_1 = "Test_Patient_1.txt"
-    filename_patient = Test_Patient_1
-    filename_lab = Test_Lab_1
-
-    # parsed_patient_data = parse_data(filename_patient)
-    # parsed_lab_data = parse_data(filename_lab)
+    filename_patient = "Test_Patient_1.txt"
+    filename_lab = "Test_Lab_1.txt"
 
     assert parse_data(filename_lab)[1][1] == str(1)
     assert parse_data(filename_lab)[1][3] == str(1.8)
