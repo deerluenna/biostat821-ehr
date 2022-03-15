@@ -76,12 +76,12 @@ def sick_patients(
     if id_larger:
         return id_larger
     elif gt_lt == ">":
-        raise ValueError("No one is larger")
+        return set([])
 
     if id_smaller:
         return id_smaller
     elif gt_lt == "<":
-        raise ValueError("No one is smaller")
+        return set([])
 
 
 def age_first_adm(

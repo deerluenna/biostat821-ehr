@@ -7,7 +7,7 @@ from EHR_analysis import parse_data, num_older_than, sick_patients, age_first_ad
 def test_parse_data():
     """Test data parsing."""
     filename_patient = "Test_Patient_1.txt"
-    filename_lab = T"Test_Lab_1.txt"
+    filename_lab = "Test_Lab_1.txt"
 
     assert parse_data(filename_lab)[1][1] == str(1)
     assert parse_data(filename_lab)[1][3] == str(1.8)
