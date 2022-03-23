@@ -1,9 +1,38 @@
 # EHR_analysis
-The EHR_analysis contains several functions to process and analyze EHR data. The inputs are a patient file and a lab file, which are in formats of txt files. The former has 7 columns and the latter has 6 columns.
+## Setup
+This project is written in Python3. Some packages used in the scripts include:
+- typing
+- datetime
+
+The EHR_analysis,py module contains several functions to process and analyze EHR data. The inputs are a patient file and a lab file, which are in formats of txt files. The former has 7 columns and the latter has 6 columns. They shoulde be in the same folder as the EHR_analysis.py file to work properly. 
+- Patient data: Contains patient demographics data
+- Lab data: Contains laboratory results of patients
+
+Some requirements of the data files are:
+- The first row is a header containing column names
+- Every column is separated by tabs
+
+In the EHR_analysis module, we also included a Patient and a Lab class to help store information needed. The descriptions are in the following.
+
+## Class Descriptions
+### Lab Class
+The Lab class has instance attributes including:
+- PatientID
+- PatientGender
+- PatientDateOfBirth
+- PatientRace
+
+## Patient Class
+The Patient class has instance attributes including:
+- PatientID
+- LabName
+- LabValue
+- LabUnit
+- LabDateTime
 
 ## For End Users
-This project has four modules:
-- `parse_data` contains a function to parse lab and patient data.
+The EHR_analysis module has 6 main functions:
+- `parse_data` contains a function to parse patient and lab data.
     Inputs include patient file name with file type (e.g. "Patient.txt") and lab file name with file type (e.g. "Lab.txt") to allow further analysis.
 - `num_older_than` contains a function to calculate the number of patients older than the age entered.
     Inputs include age (int) and the patient file previously entered.
@@ -15,7 +44,7 @@ This project has four modules:
 - `create_lab_class` contains a function to create lab objects with attributes including patient ID, lab name, value, units, and lab date.
 
 ## For Contributors Running Tests
-Test modules are placed in the `test_EHR.py`. Importation of `pytest` is required for testing. Note that tests is not a Python package and has no "__init__.py" file.
+Test modules are placed in the `test_EHR.py`. Importation of `pytest` is required for testing. The files `Test_Patient_1.txt`, `Test_Patient_2.txt`, `Test_Lab_1`, and `Test_Lab_2` are included to be used for testing.
 
 pytest has many command line options with a powerful discovery mechanism:
 - `python pytest test_EHR.py` to run test on EHR_analysis.
