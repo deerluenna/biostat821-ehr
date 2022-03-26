@@ -17,10 +17,17 @@ class Patient:
 
 class Lab:
     def __init__(
-        self, patient_id: str, lab: str, value: str, units: str, lab_date: str
+        self,
+        patient_id: str,
+        adm_id: str,
+        lab_name: str,
+        lab_value: str,
+        units: str,
+        lab_date: str,
     ):
         self.patient_id = patient_id
-        self.lab = lab
-        self.value = value
+        self.adm_id = adm_id
+        self.lab_name = lab_name
+        self.lab_value = lab_value
         self.units = units
         self.lab_date = lab_date
