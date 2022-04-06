@@ -82,8 +82,8 @@ def num_older_than(age: float, list_of_patient: list[Patient]) -> int:
     """
 
     num = 0
-    for i in range(0, len(list_of_patient)):  # N times
-        p_birth = datetime.strptime(list_of_patient[i].DOB, "%Y-%m-%d %H:%M:%S.%f").year
+    for i in list_of_patient:  # N times
+        p_birth = datetime.strptime(i.DOB, "%Y-%m-%d %H:%M:%S.%f").year
 
         if datetime.now().year - p_birth > age:  # 0(1)
             num += 1
@@ -108,19 +108,19 @@ def sick_patients(
     if (gt_lt != ">") & (gt_lt != "<"):  # 0(1)
         raise ValueError("Operator input should be either '>' or '<'")
     elif gt_lt == ">":
-        for i in range(1, len(list_of_lab)):
+        for i in list_of_lab):
             if (
-                lab == list_of_lab[i].lab_name
-                and float(list_of_lab[i].lab_value) > value
+                lab == i.lab_name
+                and float(i.lab_value) > value
             ):  # 0(1)
-                id_larger.add(list_of_lab[i].patient_id)
+                id_larger.add(i.patient_id)
     elif gt_lt == "<":
-        for i in range(1, len(list_of_lab)):  # N times
+        for i in list_of_lab):  # N times
             if (
-                lab == list_of_lab[i].lab_name
-                and float(list_of_lab[i].lab_value) < value
+                lab == i.lab_name
+                and float(i.lab_value) < value
             ):  # 0(1)
-                id_smaller.add(list_of_lab[i].patient_id)
+                id_smaller.add(i.patient_id)
 
     if id_larger:  # 0(1)
         return id_larger
