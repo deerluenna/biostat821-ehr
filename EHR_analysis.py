@@ -82,8 +82,8 @@ def num_older_than(age: float, list_of_patient: list[Patient]) -> int:
     """
 
     num = 0
-    for i in list_of_patient:  # N times
-        p_birth = datetime.strptime(i.DOB, "%Y-%m-%d %H:%M:%S.%f").year
+    for patient_object in list_of_patient:  # N times
+        p_birth = datetime.strptime(patient_object.DOB, "%Y-%m-%d %H:%M:%S.%f").year
 
         if datetime.now().year - p_birth > age:  # 0(1)
             num += 1
@@ -108,19 +108,17 @@ def sick_patients(
     if (gt_lt != ">") & (gt_lt != "<"):  # 0(1)
         raise ValueError("Operator input should be either '>' or '<'")
     elif gt_lt == ">":
-        for i in list_of_lab):
+        for lab_object in list_of_lab:
             if (
-                lab == i.lab_name
-                and float(i.lab_value) > value
+                lab == lab_object.lab_name and float(lab_object.lab_value) > value
             ):  # 0(1)
-                id_larger.add(i.patient_id)
+                id_larger.add(lab_object.patient_id)
     elif gt_lt == "<":
-        for i in list_of_lab):  # N times
+        for lab_object in list_of_lab:  # N times
             if (
-                lab == i.lab_name
-                and float(i.lab_value) < value
+                lab == lab_object.lab_name and float(lab_object.lab_value) < value
             ):  # 0(1)
-                id_smaller.add(i.patient_id)
+                id_smaller.add(lab_object.patient_id)
 
     if id_larger:  # 0(1)
         return id_larger
@@ -148,19 +146,17 @@ def age_first_adm(
     The computational complexity is N*N + N → N^2.
     """
 
-    for i in range(len(list_of_lab)):  # N times
-        if (
-            list_of_lab[i].patient_id == patient_id and int(list_of_lab[i].adm_id) == 1
-        ):  # 0(1)
+    for lab_object in list_of_lab:  # N times
+        if lab_object.patient_id == patient_id and int(lab_object.adm_id) == 1:  # 0(1)
             age_first_lab = 0
 
-            for k in range(1, len(list_of_patient)):  # N times
-                if list_of_patient[k].patient_id == list_of_lab[i].patient_id:  # 0(1)
+            for patient_object in list_of_patient:  # N times
+                if patient_object.patient_id == lab_object.patient_id:  # 0(1)
                     p_birth = datetime.strptime(
-                        list_of_patient[k].DOB, "%Y-%m-%d %H:%M:%S.%f"
+                        patient_object.DOB, "%Y-%m-%d %H:%M:%S.%f"
                     ).year
                     lab_yr = datetime.strptime(
-                        list_of_lab[i].lab_date, "%Y-%m-%d %H:%M:%S.%f"
+                        lab_object.lab_date, "%Y-%m-%d %H:%M:%S.%f"
                     ).year
                     age_first_lab = lab_yr - p_birth
                     return age_first_lab
@@ -198,8 +194,3 @@ if __name__ == "__main__":
         parsed_patient_data, parsed_lab_data, patient_id
     )
     print(f"The age of patient at first admission is:", result_age_first_adm)
-
-    # a = create_patient_class(parsed_patient_data)
-    # print(a[0].patient_id, a[0].gender, a[0].DOB, a[0].age)
-    # b = create_lab_class(parsed_lab_data)
-    # print(b[0].patient_id, b[0].lab, b[0].value, b[0].units, b[0].lab_date)
