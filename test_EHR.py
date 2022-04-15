@@ -20,7 +20,7 @@ def test_parse_data():
     assert list_of_patient[0].patient_id == "F0B53A2C-98CA-415D-B928-E3FD0E52B22A"
     assert list_of_patient[1].patient_id == "1A8791E3-A61C-455A-8DEE-763EB90C9B2A"
 
-
+    
 def test_num_older_than():
     """Test number of patients older."""
     Test_Patient_1 = "Test_Patient_1.txt"

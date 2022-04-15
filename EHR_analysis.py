@@ -1,8 +1,8 @@
 # --- Read and parse the data files --- #
+
 from datetime import date, datetime
 from typing import Tuple, Dict
 from EHR_objects import Patient, Lab
-
 
 ## Data Parsing
 def parse_data(
