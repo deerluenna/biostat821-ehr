@@ -27,7 +27,7 @@ def test_parse_patient_data():
     assert a.gender == "Male"
     assert a.age == 72
     assert a.race == "African American"
-    assert parsed_patient_data[1] == "F0B53A2C-98CA-415D-B928-E3FD0E52B22A"
+    assert parsed_patient_data[0] == "F0B53A2C-98CA-415D-B928-E3FD0E52B22A"
     conn.close()
 
 

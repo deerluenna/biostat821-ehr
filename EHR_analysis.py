@@ -25,17 +25,19 @@ def parse_patient_data(filename_patient: str):
     )
     with open(filename_patient, "r", encoding="utf-8-sig") as patient_file:
         text = patient_file.readlines()
+        line_info = []
         pat_id_list = []
         for line in text:  # N times
             col_in_line = line.strip().split("\t")  # 0(1)
-            a, b, c, d, e, f, g = col_in_line  # 0(1)
-            cur.execute(
-                f"INSERT INTO patient VALUES('{a}','{b}','{c}','{d}','{e}','{f}','{g}')"
-            )
-            pat_id_list.append(f"{a}")  # 0(1)
-    print(pat_id_list[1])
+            line_info.append(col_in_line)
+            pat_id_list.append(col_in_line[0])  # 0(1) # Get the 0th col
+        cur.executemany(
+            "INSERT INTO patient VALUES(?, ?, ?, ?, ?, ?, ?)",
+            line_info[1:],  # Don't want col name
+        )
+
     conn.commit()
-    return pat_id_list
+    return pat_id_list[1:]
 
 
 def parse_lab_data(filename_lab: str):
@@ -54,12 +56,13 @@ def parse_lab_data(filename_lab: str):
 
     with open(filename_lab, "r", encoding="utf-8-sig") as lab_file:
         text = lab_file.readlines()
+        line_info = []
         for line in text:  # N times
             col_in_line = line.strip().split("\t")  # 0(1)
-            a, b, c, d, e, f = col_in_line  # 0(1)
-            cur.execute(
-                f"INSERT INTO lab VALUES('{a}','{b}','{c}','{d}','{e}','{f}')"
-            )  # 0(1)
+            line_info.append(col_in_line)  # 0(1)
+        cur.executemany(
+            "INSERT INTO lab VALUES(?, ?, ?, ?, ?, ?)", line_info[1:]
+        )  # 0(1)
     conn.commit()
 
 
@@ -72,7 +75,7 @@ def create_patient_class(pat_id_list) -> list[Patient]:
     The computational complexity is N*(1+1) → N.
     """
     list_of_patient_object = []
-    for pat_id in pat_id_list[1:]:  # N times
+    for pat_id in pat_id_list:  # N times
         patient_object = Patient(cursor=cur, pat_id=pat_id)  # 0(1)
         list_of_patient_object.append(patient_object)  # 0(1)
     return list_of_patient_object
@@ -89,7 +92,7 @@ def num_older_than(age: float, list_of_patient_object: list[Patient]) -> int:
     """
     num = 0
     for patient_object in list_of_patient_object:  # N times
-        # print(patient_object.gender)
+        # print(patient_object.pat_id)
         if patient_object.age > age:  # 0(1)
             num += 1
     return num
