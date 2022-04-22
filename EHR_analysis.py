@@ -1,132 +1,144 @@
-# --- Read and parse the data files --- #
-
-from datetime import date, datetime
-from typing import Tuple, Dict
 from EHR_objects import Patient, Lab
+from datetime import datetime
+from typing import List, Dict
+import sqlite3
+import os
+
+conn = sqlite3.connect("EHR.db")
+cur = conn.cursor()
 
 ## Data Parsing
-def parse_data(
-    filename_patient: str, filename_lab: str
-) -> Tuple[list[Patient], list[Lab]]:
+def parse_patient_data(filename_patient: str):
     """
-    Parse the patient and lab files, return a list of patient class and a list of lab class,
-    with corresponding patient and lab information.
-    Input: 1. String of patient filename 2. String of lab filename
-    Output: 1. List of patient information 2. List of lab information
+    Parse the patient data file, create a table with patient information in the database.
+    Input: String of the patient filename
+    Output: List of patient ids
 
     The computational complexity for the parser function is
-    N*(1+1) + N*(1+1) + N*1 + N*1 + N + N → 8N → N.
+    N*(1+1+1) → N.
     """
+    # Create patient and lab tables in database
+    cur.execute("DROP TABLE IF EXISTS patient")  # Drop the table if exists
+    cur.execute(
+        "CREATE TABLE IF NOT EXISTS patient(PatientID TEXT, PatientGender TEXT, PatientDateOfBirth TEXT, \
+        PatientRace TEXT, PatientMaritalStatus TEXT, PatientLanguage TEXT, PatientPopulationPercentageBelowPoverty REAL)"
+    )
+    with open(filename_patient, "r", encoding="utf-8-sig") as patient_file:
+        text = patient_file.readlines()
+        line_info = []
+        pat_id_list = []
+        for line in text:  # N times
+            col_in_line = line.strip().split("\t")  # 0(1)
+            line_info.append(col_in_line)
+            pat_id_list.append(col_in_line[0])  # 0(1) # Get the 0th col
+        cur.executemany(
+            "INSERT INTO patient VALUES(?, ?, ?, ?, ?, ?, ?)",
+            line_info[1:],  # Don't want col name
+        )
 
-    # Open and parse patient file
-    with open(filename_patient, "r", encoding="utf-8-sig") as file:
-        text = file.readlines()
-    patient_list_of_list = []
-    for line in text:  # N times
-        col_in_line = line.strip().split("\t")  # 0(1)
-        patient_list_of_list.append(col_in_line)  # 0(1)
+    conn.commit()
+    return pat_id_list[1:]
 
-    # Open and parse lab file
-    with open(filename_lab, "r", encoding="utf-8-sig") as file:
-        text = file.readlines()
-    lab_list_of_list = []
-    for line in text:  # N times
-        col_in_line = line.strip().split("\t")  # 0(1)
-        lab_list_of_list.append(col_in_line)  # 0(1)
 
-    # Dictionary with patient column index
-    patient_col_idx = {}
-    for idx, key in enumerate(patient_list_of_list[0]):  # N times
-        patient_col_idx[key] = idx  # 0(1)
+def parse_lab_data(filename_lab: str):
+    """
+    Parse the lab data file, create a table with lab information in the database.
+    Input: String of the lab filename
+    Output: None
 
-    # Dictionary with lab column index
-    lab_col_idx = {}
-    for idx, key in enumerate(lab_list_of_list[0]):  # N times
-        lab_col_idx[key] = idx  # 0(1)
+    The computational complexity for the parser function is
+    N*(1+1+1) → N.
+    """
+    cur.execute(
+        "CREATE TABLE IF NOT EXISTS lab(PatientID TEXT, AdmissionID INT, LabName TEXT, \
+        LabValue REAL, LabUnits STR, LabDateTime STR)"
+    )
 
-    # Loop through each row to get patient info
-    patient_list = []
-    for i in range(1, len(patient_list_of_list)):  # N times
-        patient = Patient(
-            patient_id=patient_list_of_list[i][patient_col_idx["PatientID"]],
-            gender=patient_list_of_list[i][patient_col_idx["PatientGender"]],
-            DOB=patient_list_of_list[i][patient_col_idx["PatientDateOfBirth"]],
-            race=patient_list_of_list[i][patient_col_idx["PatientRace"]],
+    with open(filename_lab, "r", encoding="utf-8-sig") as lab_file:
+        text = lab_file.readlines()
+        line_info = []
+        for line in text:  # N times
+            col_in_line = line.strip().split("\t")  # 0(1)
+            line_info.append(col_in_line)  # 0(1)
+        cur.executemany(
+            "INSERT INTO lab VALUES(?, ?, ?, ?, ?, ?)", line_info[1:]
         )  # 0(1)
-        patient_list.append(patient)
+    conn.commit()
 
-    # Loop through each row to get lab info
-    lab_list = []
-    for i in range(1, len(lab_list_of_list)):  # N times
-        lab = Lab(
-            patient_id=lab_list_of_list[i][lab_col_idx["PatientID"]],
-            adm_id=lab_list_of_list[i][lab_col_idx["AdmissionID"]],
-            lab_name=lab_list_of_list[i][lab_col_idx["LabName"]],
-            lab_value=lab_list_of_list[i][lab_col_idx["LabValue"]],
-            units=lab_list_of_list[i][lab_col_idx["LabUnits"]],
-            lab_date=lab_list_of_list[i][lab_col_idx["LabDateTime"]],
-        )  # 0(1)
-        lab_list.append(lab)
-    return patient_list, lab_list
+
+def create_patient_class(pat_id_list: list[str]) -> list[Patient]:
+    """
+    Create a list of patient objects based on a list of patient ids.
+    Input: List of patient ids
+    Output: List of patient objects
+
+    The computational complexity is N*(1+1) → N.
+    """
+    list_of_patient_object = []
+    for pat_id in pat_id_list:  # N times
+        patient_object = Patient(cursor=cur, pat_id=pat_id)  # 0(1)
+        list_of_patient_object.append(patient_object)  # 0(1)
+    return list_of_patient_object
 
 
 ## Number of patients older
-def num_older_than(age: float, list_of_patient: list[Patient]) -> int:
+def num_older_than(age: float, list_of_patient_object: list[Patient]) -> int:
     """
     Calculate the number of patients whose age are older than a certain entered age.
     Input: 1. Float of age 2. List of patient objects
     Output: Integer of number of patients
 
-    The computational complexity for the parser function is
-    N*(1+1) → 2N → N.
+    The computational complexity is N*1 → N.
     """
-
     num = 0
-    for patient_object in list_of_patient:  # N times
-        p_birth = datetime.strptime(patient_object.DOB, "%Y-%m-%d %H:%M:%S.%f").year
-
-        if datetime.now().year - p_birth > age:  # 0(1)
+    for patient_object in list_of_patient_object:  # N times
+        if patient_object.age > age:  # 0(1)
             num += 1
-
     return num
 
 
 ## Sick patient IDs
-def sick_patients(
-    lab: str, gt_lt: str, value: float, list_of_lab: list[Lab]
-) -> set[str]:
+def sick_patients(lab: str, gt_lt: str, value: float) -> set[str]:
     """
     Find unique patient IDs with a lab value greater or less than
     the given value of the specified lab type.
 
-    The computational complexity is 1*N → N.
+    Input: 1. String of lab name 2. String of operator 3.String of critical value
+    Output: Set of string of sick patient IDs
+
+    The computational complexity is 1 + N*1 + N*1 → 2N → N.
     """
 
-    id_larger = set()
-    id_smaller = set()
+    id_larger: set[str] = set()
+    id_smaller: set[str] = set()
 
     if (gt_lt != ">") & (gt_lt != "<"):  # 0(1)
         raise ValueError("Operator input should be either '>' or '<'")
-    elif gt_lt == ">":
-        for lab_object in list_of_lab:
-            if (
-                lab == lab_object.lab_name and float(lab_object.lab_value) > value
-            ):  # 0(1)
-                id_larger.add(lab_object.patient_id)
-    elif gt_lt == "<":
-        for lab_object in list_of_lab:  # N times
-            if (
-                lab == lab_object.lab_name and float(lab_object.lab_value) < value
-            ):  # 0(1)
-                id_smaller.add(lab_object.patient_id)
+
+    elif gt_lt == ">":  # 0(1)
+        id_larger = cur.execute(
+            "SELECT distinct PatientID FROM lab WHERE (LabName = ?) AND (LabValue > ?)",
+            (lab, value),
+        ).fetchall()
+        output_id_larger = set()
+        for id in id_larger:  # N times
+            output_id_larger.add(id[0])
+    elif gt_lt == "<":  # 0(1)
+        id_smaller = cur.execute(
+            "SELECT distinct PatientID FROM lab WHERE (LabName = ?) AND (LabValue < ?)",
+            (lab, value),
+        ).fetchall()
+        output_id_smaller = set()
+        for id in id_smaller:  # N times
+            output_id_smaller.add(id[0])
 
     if id_larger:  # 0(1)
-        return id_larger
+        return output_id_larger
     elif gt_lt == ">":
         return set([])
 
     if id_smaller:  # 0(1)
-        return id_smaller
+        return output_id_smaller
     elif gt_lt == "<":
         return set([])
 
@@ -135,33 +147,32 @@ def sick_patients(
 
 ## Age at first admission
 def age_first_adm(
-    list_of_patient: list[Patient],
-    list_of_lab: list[Lab],
     patient_id: str,
 ) -> int:
 
     """
     Calculate the age at first admission of the given patient.
 
+    Input: Patient ID
+    Output: Integer of age at first admission
+
     The computational complexity is N*N + N → N^2.
     """
 
-    for lab_object in list_of_lab:  # N times
-        if lab_object.patient_id == patient_id and int(lab_object.adm_id) == 1:  # 0(1)
-            age_first_lab = 0
+    p_birth = cur.execute(
+        "SELECT PatientDateOfBirth FROM patient WHERE (PatientID = ?)", (patient_id,)
+    ).fetchone()
+    # p_birth = Patient(cur, patient_id).DOB
+    adm_date = cur.execute(
+        "SELECT MIN(LabDateTime) FROM lab WHERE (PatientID = ?)", (patient_id,)
+    ).fetchone()
+    birth_yr = datetime.strptime(p_birth[0], "%Y-%m-%d %H:%M:%S.%f").year
+    lab_yr = datetime.strptime(adm_date[0], "%Y-%m-%d %H:%M:%S.%f").year
+    age_first_lab = lab_yr - birth_yr
 
-            for patient_object in list_of_patient:  # N times
-                if patient_object.patient_id == lab_object.patient_id:  # 0(1)
-                    p_birth = datetime.strptime(
-                        patient_object.DOB, "%Y-%m-%d %H:%M:%S.%f"
-                    ).year
-                    lab_yr = datetime.strptime(
-                        lab_object.lab_date, "%Y-%m-%d %H:%M:%S.%f"
-                    ).year
-                    age_first_lab = lab_yr - p_birth
-                    return age_first_lab
-
-    raise ValueError("No lab record or no such patient id.")
+    if p_birth == [] or adm_date == []:
+        raise ValueError("No lab record or no such patient id.")
+    return age_first_lab
 
 
 if __name__ == "__main__":
@@ -170,12 +181,14 @@ if __name__ == "__main__":
     print("Enter your lab file name")
     filename_lab = input()
 
-    parsed_patient_data, parsed_lab_data = parse_data(filename_patient, filename_lab)
+    pat_id_list = parse_patient_data(filename_patient)
+    parse_lab_data(filename_lab)
+    list_of_patient_object = create_patient_class(pat_id_list)
 
     print("Enter the age to calculate:")
     age = float(input())
 
-    num = num_older_than(age, parsed_patient_data)
+    num = num_older_than(age, list_of_patient_object)
     print(num)
 
     print('To get the IDs of sick patient, enter the "lab test name" first:')
@@ -185,12 +198,13 @@ if __name__ == "__main__":
     print("Enter critical lab value:")
     value = float(input())
 
-    result_sick_patient = sick_patients(lab, gt_lt, value, parsed_lab_data)
+    result_sick_patient = sick_patients(lab, gt_lt, value)
     print(result_sick_patient)
 
     print("Enter the patient ID for age at first admission")
     patient_id = input()
-    result_age_first_adm = age_first_adm(
-        parsed_patient_data, parsed_lab_data, patient_id
-    )
+    result_age_first_adm = age_first_adm(patient_id)
     print(f"The age of patient at first admission is:", result_age_first_adm)
+
+    conn.close()
+    os.remove("EHR.db")
