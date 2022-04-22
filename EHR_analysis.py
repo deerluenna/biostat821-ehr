@@ -7,7 +7,7 @@ import os
 conn = sqlite3.connect("EHR.db")
 cur = conn.cursor()
 
-
+## Data Parsing
 def parse_patient_data(filename_patient: str):
     """
     Parse the patient data file, create a table with patient information in the database.
@@ -66,7 +66,7 @@ def parse_lab_data(filename_lab: str):
     conn.commit()
 
 
-def create_patient_class(pat_id_list) -> list[Patient]:
+def create_patient_class(pat_id_list: list[str]) -> list[Patient]:
     """
     Create a list of patient objects based on a list of patient ids.
     Input: List of patient ids
@@ -92,7 +92,6 @@ def num_older_than(age: float, list_of_patient_object: list[Patient]) -> int:
     """
     num = 0
     for patient_object in list_of_patient_object:  # N times
-        # print(patient_object.pat_id)
         if patient_object.age > age:  # 0(1)
             num += 1
     return num
@@ -115,6 +114,7 @@ def sick_patients(lab: str, gt_lt: str, value: float) -> set[str]:
 
     if (gt_lt != ">") & (gt_lt != "<"):  # 0(1)
         raise ValueError("Operator input should be either '>' or '<'")
+
     elif gt_lt == ">":  # 0(1)
         id_larger = cur.execute(
             "SELECT distinct PatientID FROM lab WHERE (LabName = ?) AND (LabValue > ?)",
@@ -158,11 +158,11 @@ def age_first_adm(
 
     The computational complexity is N*N + N → N^2.
     """
+
     p_birth = cur.execute(
         "SELECT PatientDateOfBirth FROM patient WHERE (PatientID = ?)", (patient_id,)
     ).fetchone()
     # p_birth = Patient(cur, patient_id).DOB
-    # print(Patient(cur, patient_id).DOB)
     adm_date = cur.execute(
         "SELECT MIN(LabDateTime) FROM lab WHERE (PatientID = ?)", (patient_id,)
     ).fetchone()

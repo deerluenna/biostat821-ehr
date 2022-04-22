@@ -43,7 +43,7 @@ def test_parse_lab_data():
     assert output[0] == 35.8
     conn.close()
 
-
+    
 def test_num_older_than():
     """Test number of patients older."""
     conn = sqlite3.connect("EHR.db")
